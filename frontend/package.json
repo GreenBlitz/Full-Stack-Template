@@ -1,0 +1,11 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Frontend for the application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo Frontend Test Succeeded && exit 0"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -5,6 +5,11 @@
   "scripts": {
     "test": "echo Test Succeeded && exit 0"
   },
+  "workspaces": [
+    "frontend",
+    "backend",
+    "common"
+  ],
   "author": "",
   "license": "ISC",
   "description": ""

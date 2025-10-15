@@ -1,0 +1,11 @@
+{
+  "name": "common",
+  "version": "1.0.0",
+  "description": "Common for the application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo Common Test Succeeded && exit 0"
+  },
+  "author": "",
+  "license": "ISC"
+}

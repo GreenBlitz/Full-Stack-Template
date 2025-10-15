@@ -1,0 +1,11 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend for the application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo Backend Test Succeeded && exit 0"
+  },
+  "author": "",
+  "license": "ISC"
+}
