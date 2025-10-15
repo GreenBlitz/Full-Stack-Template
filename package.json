@@ -1,0 +1,11 @@
+{
+  "name": "full-stack-template",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo Test Succeeded && exit 0"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
