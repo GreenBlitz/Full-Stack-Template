@@ -12,5 +12,11 @@
   ],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "esbuild": "0.25.11"
+  },
+  "dependencies": {
+    "esbuild-plugin-tsc": "^0.5.0"
+  }
 }
