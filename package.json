@@ -23,6 +23,7 @@
     "typescript-eslint": "^8.46.2"
   },
   "dependencies": {
+    "eslint-plugin-bsd": "^1.0.0",
     "tsx": "^4.20.6"
   }
 }

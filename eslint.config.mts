@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
+import pluginBsd from "eslint-plugin-bsd";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
@@ -14,7 +15,7 @@ export default defineConfig([
   { ignores: ["**/dist/**", "**/bundle.js"] },
   {
     files: ["**/*.ts", "**/*.tsx"],
-    plugins: { js },
+    plugins: { js, bsd: pluginBsd },
     extends: ["js/recommended"],
     languageOptions: {
       sourceType: "module",
@@ -160,6 +161,7 @@ export default defineConfig([
       "@typescript-eslint/prefer-for-of": "error",
       "@typescript-eslint/prefer-function-type": "error",
       "@typescript-eslint/prefer-includes": "error",
+      "bsd/basad": "error",
       "@typescript-eslint/prefer-literal-enum-member": "error",
       "@typescript-eslint/prefer-namespace-keyword": "error",
       "@typescript-eslint/prefer-nullish-coalescing": "error",
