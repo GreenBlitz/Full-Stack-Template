@@ -1,14 +1,17 @@
-import { build } from 'esbuild'
+// בס"ד
+import { build } from "esbuild";
 
 export function createBuildSettings() {
   return {
-    entryPoints: ['src/main.ts'],
-    outfile: 'dist/bundle.js',
+    entryPoints: ["src/main.ts"],
+    outfile: "dist/bundle.js",
     bundle: true,
     plugins: [],
     minify: true,
-    platform: 'node',
-    target: ['node16'],
-  } satisfies Parameters<typeof build>[0]
+    platform: "node",
+    target: ["node16"],
+  } satisfies Parameters<typeof build>[0];
 }
-build(createBuildSettings())
+build(createBuildSettings()).catch((error: unknown) => {
+  console.warn(error);
+});

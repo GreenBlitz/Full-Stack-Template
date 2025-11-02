@@ -18,7 +18,8 @@
     "noImplicitThis": true /* Raise error on 'this' expressions with an implied 'any' type. */,
     "alwaysStrict": false /* Parse in strict mode and emit "use strict" for each source file. */,
     "resolveJsonModule": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "jsx": "react-jsx"
   },
-  "include": ["**/*.ts", "**/*.tsx", "eslint.config.mts"],
+  "include": ["**/*.ts", "**/*.tsx", "eslint.config.mts"]
 }

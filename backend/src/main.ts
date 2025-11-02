@@ -1,1 +1,3 @@
-const Skibidi = () => "";
+// בס"ד
+console.log("Hello World!");
+
