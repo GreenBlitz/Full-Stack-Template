@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo Backend Test Succeeded && exit 0",
-    "build": "tsx build.ts"
+    "build": "tsx build.ts",
+    "start": "node dist/bundle.js",
+    "deploy": "npm run build && npm run start"
   },
   "author": "",
   "license": "ISC",
