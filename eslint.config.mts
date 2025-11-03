@@ -16,7 +16,7 @@ export default defineConfig([
   { ignores: ["**/dist/**", "**/bundle.js"] },
   {
     files: ["**/*.ts", "**/*.tsx"],
-    plugins: { js, bsd: pluginBsd, "@eslint-react": eslintReact },
+    plugins: { js, bsd: pluginBsd as Record<string, Plugin>, "@eslint-react": eslintReact },
     extends: ["js/recommended"],
     languageOptions: {
       sourceType: "module",
@@ -170,7 +170,6 @@ export default defineConfig([
       "@typescript-eslint/prefer-function-type": "error",
       "@typescript-eslint/prefer-includes": "error",
       "bsd/basad": "error",
-      // "@eslint-react/naming-convention/component-name": "error",
       "@typescript-eslint/prefer-literal-enum-member": "error",
       "@typescript-eslint/prefer-namespace-keyword": "error",
       "@typescript-eslint/prefer-nullish-coalescing": "error",
