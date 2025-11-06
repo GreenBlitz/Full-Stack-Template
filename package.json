@@ -2,7 +2,13 @@
   "name": "full-stack-template",
   "version": "1.0.0",
   "scripts": {
-    "test": "echo Test Succeeded && exit 0"
+    "test": "echo Test Succeeded && exit 0",
+    "backend:dev": "npm run --workspace=backend dev",
+    "frontend:dev": "npm run --workspace=frontend dev",
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "build": "npm run --workspace=backend build && npm run --workspace=frontend build",
+    "start": "npm run --workspace=backend start && npm run --workspace=frontend start",
+    "deploy": "npm run build && npm run start"
   },
   "workspaces": [
     "frontend",
@@ -15,17 +21,22 @@
   "devDependencies": {
     "@eslint-react/eslint-plugin": "^2.3.1",
     "@eslint/js": "^9.38.0",
+    "@types/express": "^5.0.5",
+    "@types/node": "^24.10.0",
     "@types/react": "^19.2.2",
+    "concurrently": "^9.2.1",
     "esbuild": "0.25.11",
     "eslint": "^9.38.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.4.0",
     "jiti": "^2.6.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2"
   },
   "dependencies": {
     "eslint-plugin-bsd": "^1.0.0",
+    "express": "^5.1.0",
     "react": "^19.2.0",
     "tsx": "^4.20.6"
   }

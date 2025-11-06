@@ -7,6 +7,7 @@
     "test": "echo Frontend Test Succeeded && exit 0",
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "start": "tsx start.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },

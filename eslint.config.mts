@@ -16,7 +16,11 @@ export default defineConfig([
   { ignores: ["**/dist/**", "**/bundle.js"] },
   {
     files: ["**/*.ts", "**/*.tsx"],
-    plugins: { js, bsd: pluginBsd as Record<string, Plugin>, "@eslint-react": eslintReact },
+    plugins: {
+      js,
+      bsd: pluginBsd as Record<string, Plugin>,
+      "@eslint-react": eslintReact,
+    },
     extends: ["js/recommended"],
     languageOptions: {
       sourceType: "module",
@@ -46,7 +50,7 @@ export default defineConfig([
       "@typescript-eslint/default-param-last": "error",
       "dot-notation": "off",
       "@typescript-eslint/dot-notation": "error",
-      "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/explicit-member-accessibility": "error",
       "@typescript-eslint/explicit-module-boundary-types": "warn",
       "init-declarations": "off",
@@ -115,7 +119,7 @@ export default defineConfig([
       "@typescript-eslint/no-namespace": "error",
       "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
       "@typescript-eslint/no-non-null-asserted-optional-chain": "error",
-      "@typescript-eslint/no-non-null-assertion": "error",
+      "@typescript-eslint/no-non-null-assertion": "warn",
       "no-redeclare": "off",
       "@typescript-eslint/no-redeclare": "error",
       "@typescript-eslint/no-redundant-type-constituents": "error",

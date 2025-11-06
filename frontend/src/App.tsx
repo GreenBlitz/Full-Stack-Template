@@ -1,16 +1,20 @@
-import { useState } from 'react'
-import './App.css'
+// בס"ד
+import { useState, type FC } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+const counterStartingValue = 0;
+const App: FC = () => {
+  const [count, setCount] = useState(counterStartingValue);
 
   return (
     <>
-      <div>
-      </div>
+      <div></div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        <button
+          onClick={() => {
+            setCount((prevCount) => prevCount++);
+          }}
+        >
           count is {count}
         </button>
         <p>
@@ -21,7 +25,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
