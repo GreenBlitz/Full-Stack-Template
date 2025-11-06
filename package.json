@@ -35,9 +35,11 @@
     "typescript-eslint": "^8.46.2"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.16",
     "eslint-plugin-bsd": "^1.0.0",
     "express": "^5.1.0",
     "react": "^19.2.0",
+    "tailwindcss": "^4.1.16",
     "tsx": "^4.20.6"
   }
 }
