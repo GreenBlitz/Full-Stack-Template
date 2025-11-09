@@ -11,6 +11,8 @@ const dirname = path.dirname(__filename);
 const distDirectory = path.join(dirname, "dist");
 const indexHTML = path.join(distDirectory, "index.html");
 
+const Skibidi = true;
+
 app.use(express.static(distDirectory));
 
 app.get(/^(.*)$/, (req, res) => {
