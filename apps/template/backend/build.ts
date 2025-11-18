@@ -1,7 +1,12 @@
 // בס"ד
 import { build, context } from "esbuild";
+import { spawn } from "child_process";
+
 
 const isDev = Boolean(process.env.DEV);
+
+const bundlePath = "dist/bundle.js";
+
 
 const buildSettings = {
   entryPoints: ["src/main.ts"],
@@ -17,7 +22,23 @@ const buildDev = async () =>
   context(buildSettings)
     .then(async (ctx) => ctx.watch())
     .then(() => {
-      console.log("Watching For Backend Changes");
+      console.log("Starting nodemon to manage execution of bundle.js");
+      spawn(
+        "nodemon",
+        [
+          bundlePath,
+          "--watch",
+          bundlePath, 
+          "--ext",
+          "js", 
+          "--exec",
+          "node",
+        ],
+        {
+          stdio: "inherit",
+          shell: true
+        }
+      );
     });
 
 const buildedProject = isDev ? buildDev() : build(buildSettings);
