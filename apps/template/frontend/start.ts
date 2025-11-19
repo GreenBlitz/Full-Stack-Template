@@ -1,11 +1,11 @@
 // בס"ד
 import express from "express";
 import path from "path";
-import { getConfig as getEnvConfig } from "@repo/config-env";
 
 const app = express();
 
-const { port } = getEnvConfig();
+const defaultPort = 80;
+const port = process.env.PORT ?? defaultPort;
 const dirname = path.dirname(__filename);
 
 const distDirectory = path.join(dirname, "dist");

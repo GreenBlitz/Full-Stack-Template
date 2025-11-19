@@ -1,6 +1,7 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "globalDependencies": [".env"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -16,11 +17,11 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "env": ["PORT", "8080", "NODE_ENV", "DEV"]
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
     },
     "serve": {
       "dependsOn": ["^serve"],
-      "env": ["NODE_ENV", "PROD"]
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
     }
   }
 }
