@@ -1,12 +1,19 @@
 // בס"ד
 import * as dotenv from "dotenv";
 import * as path from "path";
+import { fileURLToPath } from "url";
 
-const rootDir = path.resolve(__dirname, "../../");
+const filename = fileURLToPath(import.meta.url);
+const packageDirname = path.dirname(filename);
+
+const rootDir = path.resolve(packageDirname, "../../");
 
 dotenv.config({
-  path: [path.join(rootDir, ".public.env"), path.join(rootDir, ".secret.env")],
-  override: false,
+  path: [
+    path.join(rootDir, ".public.env"),
+    path.join(rootDir, ".secret.env"),
+  ] as unknown as string,
+  //the type definitions for the config are just wrong... this should be a `string | string[] | undefined`
 });
 
 const defaultPort = 3000;

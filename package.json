@@ -13,9 +13,11 @@
   },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "^2.3.5",
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.1",
     "cross-env": "^10.1.0",
+    "esbuild": "^0.27.0",
     "nodemon": "^3.1.11",
     "prettier": "^3.6.2",
     "turbo": "^2.6.1",

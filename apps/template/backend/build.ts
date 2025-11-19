@@ -13,7 +13,8 @@ const buildSettings = {
   plugins: [],
   minify: true,
   platform: "node",
-  target: ["node16"],
+  target: ["ES2022"],
+  format: "cjs",
   external: ["@repo/config-env"],
 } satisfies Parameters<typeof build>[0];
 
