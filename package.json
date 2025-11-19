@@ -7,7 +7,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "serve": "turbo run serve",
-    "deploy": "npm run build && npm run serve",
+    "deploy": "npm run build && npm run serve ",
     "check-types": "turbo run check-types",
     "generate": "tsx scripts/generateProject.ts"
   },

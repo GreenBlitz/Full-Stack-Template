@@ -23,25 +23,16 @@ const buildDev = async () =>
     .then(async (ctx) => ctx.watch())
     .then(() => {
       console.log("Starting nodemon to manage execution of bundle.js");
-      spawn(
-        "nodemon",
-        [
-          bundlePath,
-          "--watch",
-          bundlePath, 
-          "--ext",
-          "js", 
-          "--exec",
-          "node",
-        ],
-        {
-          stdio: "inherit",
-          shell: true
-        }
-      );
+      spawn("nodemon",[bundlePath,"--watch",bundlePath, "--ext","js", "--exec","node",],{stdio: "inherit",shell: true});
     });
 
+
+
 const buildedProject = isDev ? buildDev() : build(buildSettings);
+
+
+
+
 buildedProject.catch((error: unknown) => {
   console.warn(error);
 });
