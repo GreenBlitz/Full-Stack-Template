@@ -1,4 +1,14 @@
 // בס"ד
-console.log("Hello World!");
+import express from "express";
+import { apiRouter } from "./routes";
 
-console.log(process.env.NODE_ENV);
+const app = express();
+
+const defaultPort = 4590;
+const port = process.env.BACKEND_PORT ?? defaultPort;
+
+app.use("/api/v1", apiRouter);
+
+app.listen(port, () => {
+  console.log(`Production server running at http://localhost:${port}`);
+});

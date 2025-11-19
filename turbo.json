@@ -1,7 +1,7 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  "globalPassThroughEnv": ["PORT","NODE_ENV"],
+  "globalPassThroughEnv": ["FRONTEND_PORT","BACKEND_PORT","NODE_ENV"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
