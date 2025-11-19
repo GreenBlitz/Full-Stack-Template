@@ -1,11 +1,11 @@
 // בס"ד
 import express from "express";
 import path from "path";
-import { config as envConfig } from "@repo/config-env";
+import { getConfig as getEnvConfig } from "@repo/config-env";
 
 const app = express();
 
-const { port } = envConfig;
+const { port } = getEnvConfig();
 const dirname = path.dirname(__filename);
 
 const distDirectory = path.join(dirname, "dist");

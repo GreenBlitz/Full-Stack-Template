@@ -15,10 +15,12 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["PORT", "8080", "NODE_ENV", "DEV"]
     },
     "serve": {
-      "dependsOn": ["^serve"]
+      "dependsOn": ["^serve"],
+      "env": ["NODE_ENV", "PROD"]
     }
   }
 }
