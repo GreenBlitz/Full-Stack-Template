@@ -1,11 +1,9 @@
 // בס"ד
 import { Router } from "express";
-import { statusOK } from "../status";
+import { StatusCodes } from "http-status-codes";
 
 export const apiRouter = Router();
 
-apiRouter.get("/health",(req,res) => {
-    res.status(statusOK).send({message: "Healthy!"})
-})
-
-
+apiRouter.get("/health", (req, res) => {
+  res.status(StatusCodes.OK).send({ message: "Healthy!" });
+});
