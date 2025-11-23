@@ -7,8 +7,9 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "serve": "dotenv -e .public.env -e .secret.env -- turbo run serve",
-    "deploy": "npm run build && npm run serve ",
+    "deploy": "npm run build && npm run serve",
     "check-types": "turbo run check-types",
+    "turbo": "tsx scripts/turboRun.ts",
     "generate": "tsx scripts/generateProject.ts"
   },
   "devDependencies": {
