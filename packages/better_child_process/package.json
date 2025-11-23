@@ -1,0 +1,10 @@
+{
+  "name": "@repo/better_child_process",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {}
+}
