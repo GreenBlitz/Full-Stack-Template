@@ -2,13 +2,23 @@
 import { spawn } from "child_process";
 import { asyncSpawnWrapper } from "../packages/better_child_process";
 
-const appNameID = 2;
+
+const composeActionID = 2;
+const composeAction = process.argv[composeActionID];
+
+const appNameID = 3;
 const appName = process.argv[appNameID];
 
 async function runDocker(name: string): Promise<void> {
-  const script = `docker compose -f .\\apps\\${name}\\docker-compose.yml --env-file .\\.public.env up --env-file .\\.secret.env`;
+  const script = [
+    `-f .\\apps\\${name}\\docker-compose.yml`,
+    `--env-file .\\.public.env`,
+    `--env-file .\\.secret.env build`,
+    composeAction
+  ];
+
   return asyncSpawnWrapper(
-    spawn(script, {
+    spawn("docker compose", script, {
       stdio: "inherit",
       shell: true,
     })

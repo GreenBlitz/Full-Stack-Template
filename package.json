@@ -9,6 +9,7 @@
     "serve": "dotenv -e .public.env -e .secret.env -- npm run turbo serve",
     "deploy": "npm run build && npm run serve",
     "check-types": "npm run turbo check-types",
+    "package": "tsx scripts/packager.ts build",
     "turbo": "tsx scripts/turboRun.ts",
     "generate": "tsx scripts/generateProject.ts"
   },
