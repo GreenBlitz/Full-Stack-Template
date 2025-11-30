@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build",
+      "label": "build",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -11,14 +11,20 @@
       "command": "turbo run build --filter=${input:project}-frontend --filter=${input:project}-backend"
     },
     {
-      "label": "Dev",
+      "label": "dev",
       "type": "shell",
       "command": "./node_modules/.bin/dotenv -e .dev.env -e .public.env -e .secret.env -- turbo run dev --filter=${input:project}-frontend --filter=${input:project}-backend"
     },
     {
-      "label": "Serve",
+      "label": "serve",
       "type": "shell",
       "command": "./node_modules/.bin/dotenv -e .public.env -e .secret.env -- turbo run serve --filter=${input:project}-frontend --filter=${input:project}-backend"
+    },
+    {
+      "label": "deploy",
+      "type": "shell",
+      "dependsOn": ["build", "serve"],
+      "dependsOrder": "sequence"
     }
   ],
   "inputs": [
