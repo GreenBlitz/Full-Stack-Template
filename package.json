@@ -2,13 +2,13 @@
   "name": "full-stack-template",
   "private": true,
   "scripts": {
-    "build": "npm run turbo build",
-    "dev": "dotenv -e .dev.env -e .public.env -e .secret.env -- npm run turbo dev",
-    "lint": "npm run turbo lint",
+    "build": "turbo run build",
+    "dev": "dotenv -e .dev.env -e .public.env -e .secret.env -- turbo run dev",
+    "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "serve": "dotenv -e .public.env -e .secret.env -- npm run turbo serve",
+    "serve": "dotenv -e .public.env -e .secret.env -- turbo run serve",
     "deploy": "npm run build && npm run serve",
-    "check-types": "npm run turbo check-types",
+    "check-types": "turbo run check-types",
     "package": "tsx scripts/packager.ts build",
     "turbo": "tsx scripts/turboRun.ts",
     "generate": "tsx scripts/generateProject.ts"

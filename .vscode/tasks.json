@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "type": "shell",
+      "command": "turbo run build --filter=${input:project}-frontend --filter=${input:project}-backend"
+    },
+    {
+      "label": "Dev",
+      "type": "shell",
+      "command": "dotenv -e .dev.env -e .public.env -e .secret.env -- turbo run dev --filter=${input:project}-frontend --filter=${input:project}-backend"
+    },
+    {
+      "label": "Serve",
+      "type": "shell",
+      "command": "dotenv -e .public.env -e .secret.env -- turbo run serve --filter=${input:project}-frontend --filter=${input:project}-backend"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "project",
+      "description": "Full Stack Projects worth running",
+      "type": "pickString",
+      "options": ["template", "test"]
+    }
+  ]
+}
