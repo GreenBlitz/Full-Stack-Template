@@ -1,0 +1,11 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    env_file:
+      - ../../../.public.env
+      - ../../../.secret.env
+    ports:
+      - "${FRONTEND_PORT}:443" # Maps host:${FRONTEND_PORT} to container:443

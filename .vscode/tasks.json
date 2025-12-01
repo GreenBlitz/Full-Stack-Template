@@ -25,6 +25,16 @@
       "type": "shell",
       "dependsOn": ["build", "serve"],
       "dependsOrder": "sequence"
+    },
+    {
+      "label": "package",
+      "type": "shell",
+      "command": "docker compose -f .\\apps\\${input:project}\\${input:workspace}\\docker-compose.yml build"
+    },
+    {
+      "label": "deliver",
+      "type": "shell",
+      "command": "docker compose -f .\\apps\\${input:project}\\${input:workspace}\\docker-compose.yml --env-file .public.env --env-file .secret.env up"
     }
   ],
   "inputs": [
@@ -33,6 +43,12 @@
       "description": "Full Stack Projects worth running",
       "type": "pickString",
       "options": ["template", "test"]
+    },
+    {
+      "id": "workspace",
+      "description": "Workspaces within projects",
+      "type": "pickString",
+      "options": ["frontend", "backend"]
     }
   ]
 }

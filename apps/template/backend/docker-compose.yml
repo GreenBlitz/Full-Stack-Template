@@ -1,0 +1,11 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    env_file:
+      - ../../../.public.env
+      - ../../../.secret.env
+    ports:
+      - "${BACKEND_PORT}:4590" # Maps host:${FRONTEND_PORT} to container:4590
