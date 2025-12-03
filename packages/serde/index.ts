@@ -4,7 +4,7 @@ import { rangeArr, BitArray, bitArrayLength } from "./BitArray";
 const binaryTrueValue = 1;
 const binaryModulus = 2;
 // TODO add signed support!
-function serdeUnsignedInt(bitCount: number): Serde<number> {
+export function serdeUnsignedInt(bitCount: number): Serde<number> {
   function serializer(serialiedData: BitArray, num: number) {
     const arr = new BitArray();
 
@@ -15,12 +15,13 @@ function serdeUnsignedInt(bitCount: number): Serde<number> {
     serialiedData.insertBitArray(arr);
   }
   function deserializer(serializedData: BitArray): number {
-    let num = 0;
+    const sumStartingValue = 0;
 
-    rangeArr(bitCount).forEach((i) => {
-      num += Number(serializedData.consumeBool()) << i;
-    });
-    return num;
+    const sum = rangeArr(bitCount).reduce(
+      (acc) => acc + Number(serializedData.consumeBool()),
+      sumStartingValue
+    );
+    return sum;
   }
   return {
     serializer,
@@ -28,7 +29,7 @@ function serdeUnsignedInt(bitCount: number): Serde<number> {
   };
 }
 
-function serdeStringifiedNum(bitCount: number): Serde<string> {
+export function serdeStringifiedNum(bitCount: number): Serde<string> {
   function serializer(seriailzedData: BitArray, num: string) {
     serdeUnsignedInt(bitCount).serializer(seriailzedData, Number(num));
   }
@@ -41,7 +42,7 @@ function serdeStringifiedNum(bitCount: number): Serde<string> {
   };
 }
 
-function serdeString(): Serde<string> {
+export function serdeString(): Serde<string> {
   const stringLengthBitCount = 12;
   function serializer(serializedData: BitArray, string: string) {
     const encodedString: Uint8Array = new TextEncoder().encode(string);
@@ -87,7 +88,7 @@ interface Serde<T> {
   deserializer: Deserializer<T>;
 }
 
-function serdeOptionalFieldsRecord<T>(
+export function serdeOptionalFieldsRecord<T>(
   fieldsSerde: FieldsRecordSerde<T>
 ): Serde<Record<string, T>> {
   function fieldsExistenceBitCount(
@@ -181,7 +182,7 @@ export function serdeRecord<T>(
 }
 
 const arrayLengthDefaultBitCount = 12;
-function serdeArray<T>(
+export function serdeArray<T>(
   itemSerde: Serde<T>,
   bitCount = arrayLengthDefaultBitCount
 ): Serde<T[]> {
@@ -202,10 +203,9 @@ function serdeArray<T>(
   ): T[] {
     const arrayLength = arrayLengthSerde.deserializer(serializedData);
 
-    const arr: T[] = [];
-    for (let i = 0; i < arrayLength; i++) {
-      arr.push(itemDeserializer(serializedData));
-    }
+    const arr = rangeArr(arrayLength).map(() =>
+      itemDeserializer(serializedData)
+    );
     return arr;
   }
   return {
@@ -218,67 +218,7 @@ function serdeArray<T>(
   };
 }
 
-// function serdeMixedArrayRecord<T, U>(
-//   arrayItemSerde: Serde<T>,
-//   recordFieldSerde: FieldsRecordSerde<U>,
-//   areRecordFieldsOptional = false
-// ): Serde<T[] | Record<string, U>> {
-//   const MIXED_DATA_POSSIBLE_TYPES = areRecordFieldsOptional
-//     ? ["Array", "OptionalFieldsRecord"]
-//     : ["Array", "Record"];
-//   function serializer(serializedData: BitArray, data: T[] | Record<string, U>) {
-//     if (data instanceof Array) {
-//       serdeEnumedString(MIXED_DATA_POSSIBLE_TYPES).serializer(
-//         serializedData,
-//         "Array"
-//       );
-//       serdeArray(arrayItemSerde).serializer(serializedData, data);
-//       return;
-//     } else if (data.constructor === Object) {
-//       if (areRecordFieldsOptional) {
-//         serdeEnumedString(MIXED_DATA_POSSIBLE_TYPES).serializer(
-//           serializedData,
-//           "OptionalFieldsRecord"
-//         );
-//         serdeOptionalFieldsRecord(recordFieldSerde).serializer(
-//           serializedData,
-//           data
-//         );
-//         return;
-//       } else {
-//         serdeEnumedString(MIXED_DATA_POSSIBLE_TYPES).serializer(
-//           serializedData,
-//           "Record"
-//         );
-//         serdeRecord(recordFieldSerde).serializer(serializedData, data);
-//         return;
-//       }
-//     }
-//     throw new Error(
-//       "while attempting to serialize " + data + ": data is not Record or Array"
-//     );
-//   }
-//   function deserializer(serializedData: BitArray) {
-//     let dataType = serdeEnumedString(MIXED_DATA_POSSIBLE_TYPES).deserializer(
-//       serializedData
-//     );
-//     if (dataType == "Array") {
-//       return serdeArray(arrayItemSerde).deserializer(serializedData);
-//     } else if (dataType == "Record") {
-//       return serdeRecord(recordFieldSerde).deserializer(serializedData);
-//     } else {
-//       return serdeOptionalFieldsRecord(recordFieldSerde).deserializer(
-//         serializedData
-//       );
-//     }
-//   }
-//   return {
-//     serializer,
-//     deserializer,
-//   };
-// }
-
-function serdeEnumedString<Options extends string>(
+export function serdeEnumedString<Options extends string>(
   possibleValues: Options[]
 ): Serde<Options> {
   function bitsNeeded(possibleValuesCount: number): number {
@@ -286,6 +226,7 @@ function serdeEnumedString<Options extends string>(
   }
   function serializer(serializedData: BitArray, data: Options) {
     const neededBits = bitsNeeded(possibleValues.length);
+
     for (let i = 0; i < possibleValues.length; i++) {
       if (data == possibleValues[i]) {
         serdeUnsignedInt(neededBits).serializer(serializedData, i);
@@ -317,7 +258,7 @@ function serdeEnumedString<Options extends string>(
   };
 }
 
-function serdeStringifiedArray<T>(itemSerde: Serde<T>): Serde<string> {
+export function serdeStringifiedArray<T>(itemSerde: Serde<T>): Serde<string> {
   function serializer(serializedData: BitArray, arr: string) {
     serdeArray(itemSerde).serializer(serializedData, JSON.parse(arr));
   }
@@ -336,7 +277,7 @@ function serdeStringifiedArray<T>(itemSerde: Serde<T>): Serde<string> {
   };
 }
 
-function serdeBool(): Serde<boolean> {
+export function serdeBool(): Serde<boolean> {
   function serializer(serializedData: BitArray, bool: boolean) {
     serializedData.insertBool(bool);
   }
@@ -349,7 +290,7 @@ function serdeBool(): Serde<boolean> {
   };
 }
 
-function serdeOptional<T>(tSerde: Serde<T>): Serde<T | undefined> {
+export function serdeOptional<T>(tSerde: Serde<T>): Serde<T | undefined> {
   function serializer(serializedData: BitArray, value?: T) {
     serdeBool().serializer(serializedData, value != undefined);
     if (value) {
@@ -357,11 +298,9 @@ function serdeOptional<T>(tSerde: Serde<T>): Serde<T | undefined> {
     }
   }
   function deserializer(serializedData: BitArray): T | undefined {
-    if (serdeBool().deserializer(serializedData)) {
-      return tSerde.deserializer(serializedData);
-    } else {
-      return undefined;
-    }
+    return serdeBool().deserializer(serializedData)
+      ? tSerde.deserializer(serializedData)
+      : undefined;
   }
   return {
     serializer,
@@ -369,11 +308,11 @@ function serdeOptional<T>(tSerde: Serde<T>): Serde<T | undefined> {
   };
 }
 
-function serdeRecordFieldsBuilder(
-  fieldNamesSerdes: [string, Serde<any>][]
+export function serdeRecordFieldsBuilder(
+  fieldNamesSerdes: Record<string, Serde<any>>
 ): FieldsRecordSerde<any> {
   const recordSerde = { serializer: {}, deserializer: {} };
-  fieldNamesSerdes.forEach(([fieldName, fieldSerde]) => {
+  Object.entries(fieldNamesSerdes).forEach(([fieldName, fieldSerde]) => {
     recordSerde.serializer[fieldName] = fieldSerde.serializer;
     recordSerde.deserializer[fieldName] = fieldSerde.deserializer;
   });
@@ -393,22 +332,3 @@ export function deserialize<T>(
   const serializedData = new BitArray(serializedDataUint8);
   return deserializer(serializedData);
 }
-
-// the previous use of functions for this that are better written with serdeRecordFieldsBuilder is not reccomended, use it instead of being like yoni  :)
-
-// export const qrSerde: FieldsRecordSerde<any> = serdeRecordFieldsBuilder([
-//   ["teamNumber", serdeTeamNumber()],
-//   ["teleReefPick", serdeReefPick()],
-//   ["autoReefPick", serdeReefPick()],
-//   ["endgameCollection", serdeCollectedObjects()],
-//   ["climb", serdeEnumedString(CLIMB_POSSIBLE_VALUES)],
-//   ["qual", serdeStringifiedNum(QUAL_BIT_COUNT)],
-//   ["defense", serdeOptional(serdeUnsignedInt(DEFENSE_RATING_BIT_COUNT))],
-//   [
-//     "defensiveEvasion",
-//     serdeOptional(serdeUnsignedInt(DEFENSE_RATING_BIT_COUNT)),
-//   ],
-//   ["scouterName", serdeString()],
-//   ["noShow", serdeBool()],
-//   ["comment", serdeString()],
-// ]);
