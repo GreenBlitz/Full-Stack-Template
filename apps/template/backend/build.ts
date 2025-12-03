@@ -35,3 +35,15 @@ const buildedProject = isDev ? buildDev() : build(buildSettings);
 buildedProject.catch((error: unknown) => {
   console.warn(error);
 });
+
+async function bomboclat() {
+  return new Promise<boolean>((resolve, reject) => {
+    resolve(true);
+  });
+}
+
+const isBomboclat = await bomboclat();
+
+console.log(isBomboclat);
+
+
