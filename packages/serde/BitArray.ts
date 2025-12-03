@@ -5,7 +5,7 @@ export const rangeArr = (length: number, rangeStart = defaultRangeStart): number
   return Array.from({ length }).map((zero, i) => i + rangeStart);
 };
 
-const bitArrayLength = 8;
+export const bitArrayLength = 8;
 const singleShift = 1;
 const shouldntInsert = 0;
 
