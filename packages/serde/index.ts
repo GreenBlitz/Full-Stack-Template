@@ -1,11 +1,29 @@
 // בס"ד
 import { rangeArr, BitArray, bitArrayLength } from "./BitArray";
 
+type Serializer<T> = (seriailzedData: BitArray, data: T) => void;
+// return field name, and its appropriate Serializer
+type RecordSerializer<T> = Record<string, Serializer<T>>;
+
+// returns the deserializedData
+type Deserializer<T> = (serializedData: BitArray) => T;
+// return field name, and its appropriate Deserializer
+type RecordDeserializer<T> = Record<string, Deserializer<T>>;
+
+interface FieldsRecordSerde<T> {
+  serializer: RecordSerializer<T>;
+  deserializer: RecordDeserializer<T>;
+}
+interface Serde<T> {
+  serializer: Serializer<T>;
+  deserializer: Deserializer<T>;
+}
+
 const binaryTrueValue = 1;
 const binaryModulus = 2;
 // TODO add signed support!
-export function serdeUnsignedInt(bitCount: number): Serde<number> {
-  function serializer(serialiedData: BitArray, num: number) {
+export const serdeUnsignedInt = (bitCount: number): Serde<number> => ({
+  serializer(serialiedData: BitArray, num: number) {
     const arr = new BitArray();
 
     rangeArr(bitCount).forEach(() => {
@@ -13,8 +31,8 @@ export function serdeUnsignedInt(bitCount: number): Serde<number> {
       num = Math.floor(num / binaryModulus);
     });
     serialiedData.insertBitArray(arr);
-  }
-  function deserializer(serializedData: BitArray): number {
+  },
+  deserializer(serializedData: BitArray): number {
     const sumStartingValue = 0;
 
     const sum = rangeArr(bitCount).reduce(
@@ -22,29 +40,21 @@ export function serdeUnsignedInt(bitCount: number): Serde<number> {
       sumStartingValue
     );
     return sum;
-  }
-  return {
-    serializer,
-    deserializer,
-  };
-}
+  },
+});
 
-export function serdeStringifiedNum(bitCount: number): Serde<string> {
-  function serializer(seriailzedData: BitArray, num: string) {
+export const serdeStringifiedNum = (bitCount: number): Serde<string> => ({
+  serializer: (seriailzedData: BitArray, num: string) => {
     serdeUnsignedInt(bitCount).serializer(seriailzedData, Number(num));
-  }
-  function deserializer(seriailzedData: BitArray): string {
+  },
+  deserializer: (seriailzedData: BitArray): string => {
     return serdeUnsignedInt(bitCount).deserializer(seriailzedData).toString();
-  }
-  return {
-    serializer,
-    deserializer,
-  };
-}
+  },
+});
 
-export function serdeString(): Serde<string> {
-  const stringLengthBitCount = 12;
-  function serializer(serializedData: BitArray, string: string) {
+const stringLengthBitCount = 12;
+export const serdeString = (): Serde<string> => ({
+  serializer(serializedData: BitArray, string: string) {
     const encodedString: Uint8Array = new TextEncoder().encode(string);
 
     serdeUnsignedInt(stringLengthBitCount).serializer(
@@ -55,52 +65,23 @@ export function serdeString(): Serde<string> {
       encodedString,
       encodedString.length * bitArrayLength
     );
-  }
-  function deserializer(serializedData: BitArray): string {
+  },
+  deserializer(serializedData: BitArray): string {
     const encodedStringLength =
       serdeUnsignedInt(stringLengthBitCount).deserializer(serializedData);
     const encodedString = serializedData.consumeBits(
       encodedStringLength * bitArrayLength
     );
     return new TextDecoder().decode(encodedString);
-  }
-  return {
-    serializer,
-    deserializer,
-  };
-}
+  },
+});
 
-export type Serializer<T> = (seriailzedData: BitArray, data: T) => void;
-// return field name, and its appropriate Serializer
-type RecordSerializer<T> = Record<string, Serializer<T>>;
-
-// returns the deserializedData
-export type Deserializer<T> = (serializedData: BitArray) => T;
-// return field name, and its appropriate Deserializer
-type RecordDeserializer<T> = Record<string, Deserializer<T>>;
-
-interface FieldsRecordSerde<T> {
-  serializer: RecordSerializer<T>;
-  deserializer: RecordDeserializer<T>;
-}
-export interface Serde<T> {
-  serializer: Serializer<T>;
-  deserializer: Deserializer<T>;
-}
-
-export function serdeOptionalFieldsRecord<T>(
+export const serdeOptionalFieldsRecord = <T>(
   fieldsSerde: FieldsRecordSerde<T>
-): Serde<Record<string, T>> {
-  function fieldsExistenceBitCount(
-    fields: RecordSerializer<T> | RecordDeserializer<T>
-  ): number {
-    return Object.keys(fields).length;
-  }
-  function serializer(
-    serializedData: BitArray,
-    fieldsSerializers: RecordSerializer<T>,
-    data: Record<string, T>
-  ) {
+): Serde<Record<string, T>> => ({
+  serializer(serializedData: BitArray, data: Record<string, T>) {
+    const fieldsSerializers = fieldsSerde.serializer;
+
     const fieldsExistenceArray = new BitArray();
     const serializedFields = new BitArray();
 
@@ -115,13 +96,17 @@ export function serdeOptionalFieldsRecord<T>(
     });
     serializedData.insertBitArray(fieldsExistenceArray);
     serializedData.insertBitArray(serializedFields);
-  }
-  function deserializer(
-    fieldsDeserializers: RecordDeserializer<T>,
-    serializedData: BitArray
-  ): Record<string, T> {
-    const data: Record<string, T> = {};
+  },
+  deserializer(serializedData: BitArray): Record<string, T> {
+    const fieldsDeserializers = fieldsSerde.deserializer;
 
+    function fieldsExistenceBitCount(
+      fields: RecordSerializer<T> | RecordDeserializer<T>
+    ): number {
+      return Object.keys(fields).length;
+    }
+
+    const data: Record<string, T> = {};
     const fieldsExistence: boolean[] = Array.from(
       rangeArr(fieldsExistenceBitCount(fieldsDeserializers)).map(() =>
         serializedData.consumeBool()
@@ -137,198 +122,143 @@ export function serdeOptionalFieldsRecord<T>(
     });
 
     return data;
-  }
-  return {
-    serializer: function (serializedData, data) {
-      serializer(serializedData, fieldsSerde.serializer, data);
-    },
-    deserializer: function (serializedData) {
-      return deserializer(fieldsSerde.deserializer, serializedData);
-    },
-  };
-}
+  },
+});
 
-export function serdeRecord<T>(
+export const serdeRecord = <T>(
   fieldsSerde: FieldsRecordSerde<T>
-): Serde<Record<string, T>> {
-  function serializer(
-    serializedData: BitArray,
-    fieldsSerializers: RecordSerializer<T>,
-    data: Record<string, T>
-  ) {
+): Serde<Record<string, T>> => ({
+  serializer(serializedData: BitArray, data: Record<string, T>) {
+    const fieldsSerializers = fieldsSerde.serializer;
     Object.keys(fieldsSerializers).forEach((field) => {
       fieldsSerializers[field](serializedData, data[field]);
     });
-  }
-  function deserializer(
-    fieldsDeserializers: RecordDeserializer<T>,
-    serializedData: BitArray
-  ): Record<string, T> {
+  },
+  deserializer(serializedData: BitArray): Record<string, T> {
+    const fieldsDeserializers = fieldsSerde.deserializer;
     const data: Record<string, T> = {};
     Object.keys(fieldsDeserializers).forEach((field) => {
       const fieldData = fieldsDeserializers[field](serializedData);
       Reflect.set(data, field, fieldData);
     });
     return data;
-  }
-  return {
-    serializer: function (serializedData: BitArray, data) {
-      serializer(serializedData, fieldsSerde.serializer, data);
-    },
-    deserializer: function (serializedData: BitArray) {
-      return deserializer(fieldsSerde.deserializer, serializedData);
-    },
-  };
-}
+  },
+});
 
 const arrayLengthDefaultBitCount = 12;
-export function serdeArray<T>(
+export const serdeArray = <T>(
   itemSerde: Serde<T>,
   bitCount = arrayLengthDefaultBitCount
-): Serde<T[]> {
+): Serde<T[]> => {
   const arrayLengthSerde = serdeUnsignedInt(bitCount);
-  function serializer(
-    itemSerializer: Serializer<T>,
-    serializedData: BitArray,
-    arr: T[]
-  ) {
-    arrayLengthSerde.serializer(serializedData, arr.length);
-    arr.forEach((value) => {
-      itemSerializer(serializedData, value);
-    });
-  }
-  function deserializer(
-    itemDeserializer: Deserializer<T>,
-    serializedData: BitArray
-  ): T[] {
-    const arrayLength = arrayLengthSerde.deserializer(serializedData);
-
-    const arr = rangeArr(arrayLength).map(() =>
-      itemDeserializer(serializedData)
-    );
-    return arr;
-  }
   return {
-    serializer: function (serializedData: BitArray, arr: T[]) {
-      serializer(itemSerde.serializer, serializedData, arr);
+    serializer(serializedData: BitArray, arr: T[]) {
+      const itemSerializer = itemSerde.serializer;
+      arrayLengthSerde.serializer(serializedData, arr.length);
+      arr.forEach((value) => {
+        itemSerializer(serializedData, value);
+      });
     },
-    deserializer: function (serializedData: BitArray) {
-      return deserializer(itemSerde.deserializer, serializedData);
+    deserializer(serializedData: BitArray): T[] {
+      const itemDeserializer = itemSerde.deserializer;
+      const arrayLength = arrayLengthSerde.deserializer(serializedData);
+
+      const arr = rangeArr(arrayLength).map(() =>
+        itemDeserializer(serializedData)
+      );
+      return arr;
     },
   };
-}
+};
 
-export function serdeEnumedString<Options extends string>(
+export const serdeEnumedString = <Options extends string>(
   possibleValues: Options[]
-): Serde<Options> {
+): Serde<Options> => {
   function bitsNeeded(possibleValuesCount: number): number {
     return Math.ceil(Math.log2(possibleValuesCount));
   }
-  function serializer(serializedData: BitArray, data: Options) {
-    const neededBits = bitsNeeded(possibleValues.length);
+  return {
+    serializer(serializedData: BitArray, data: Options) {
+      const neededBits = bitsNeeded(possibleValues.length);
 
-    for (let i = 0; i < possibleValues.length; i++) {
-      if (data == possibleValues[i]) {
-        serdeUnsignedInt(neededBits).serializer(serializedData, i);
-        return;
+      for (let i = 0; i < possibleValues.length; i++) {
+        if (data == possibleValues[i]) {
+          serdeUnsignedInt(neededBits).serializer(serializedData, i);
+          return;
+        }
       }
-    }
-    throw new Error(
-      `value ${data} is not included in possible values: ${possibleValues.toString()}`
-    );
-  }
-  function deserializer(serializedData: BitArray): Options {
-    const neededBits = bitsNeeded(possibleValues.length);
-    const valueIdentifier =
-      serdeUnsignedInt(neededBits).deserializer(serializedData);
-    if (valueIdentifier < possibleValues.length) {
-      return possibleValues[valueIdentifier];
-    }
-    throw new Error(
-      `valueIdentifier ${valueIdentifier} does not exist in possible values: ${possibleValues.toString()}`
-    );
-  }
-  return {
-    serializer: function (serializedData, data) {
-      serializer(serializedData, data);
+      throw new Error(
+        `value ${data} is not included in possible values: ${possibleValues.toString()}`
+      );
     },
-    deserializer: function (serializedData) {
-      return deserializer(serializedData);
+    deserializer(serializedData: BitArray): Options {
+      const neededBits = bitsNeeded(possibleValues.length);
+      const valueIdentifier =
+        serdeUnsignedInt(neededBits).deserializer(serializedData);
+      if (valueIdentifier < possibleValues.length) {
+        return possibleValues[valueIdentifier];
+      }
+      throw new Error(
+        `valueIdentifier ${valueIdentifier} does not exist in possible values: ${possibleValues.toString()}`
+      );
     },
   };
-}
+};
 
-export function serdeStringifiedArray<T>(itemSerde: Serde<T>): Serde<string> {
-  function serializer(serializedData: BitArray, arr: string) {
+export const serdeStringifiedArray = <T>(
+  itemSerde: Serde<T>
+): Serde<string> => ({
+  serializer(serializedData: BitArray, arr: string) {
     serdeArray(itemSerde).serializer(serializedData, JSON.parse(arr));
-  }
-  function deserializer(serializedData: BitArray) {
-    const deserializedData = serdeArray(itemSerde).deserializer(serializedData);
-    return JSON.stringify(deserializedData);
-  }
+  },
+  deserializer: (serializedData: BitArray) =>
+    JSON.stringify(serdeArray(itemSerde).deserializer(serializedData)),
+});
 
-  return {
-    serializer: function (serializedData: BitArray, arr) {
-      serializer(serializedData, arr);
-    },
-    deserializer: function (serializedArr) {
-      return deserializer(serializedArr);
-    },
-  };
-}
-
-export function serdeBool(): Serde<boolean> {
-  function serializer(serializedData: BitArray, bool: boolean) {
+export const serdeBool = (): Serde<boolean> => ({
+  serializer(serializedData: BitArray, bool: boolean) {
     serializedData.insertBool(bool);
-  }
-  function deserializer(serializedData: BitArray) {
-    return serializedData.consumeBool();
-  }
-  return {
-    serializer,
-    deserializer,
-  };
-}
+  },
+  deserializer: (serializedData: BitArray) => serializedData.consumeBool(),
+});
 
-export function serdeOptional<T>(tSerde: Serde<T>): Serde<T | undefined> {
-  function serializer(serializedData: BitArray, value?: T) {
+export const serdeOptional = <T>(tSerde: Serde<T>): Serde<T | undefined> => ({
+  serializer(serializedData: BitArray, value?: T) {
     serdeBool().serializer(serializedData, value != undefined);
     if (value) {
       tSerde.serializer(serializedData, value);
     }
-  }
-  function deserializer(serializedData: BitArray): T | undefined {
-    return serdeBool().deserializer(serializedData)
+  },
+  deserializer: (serializedData: BitArray): T | undefined =>
+    serdeBool().deserializer(serializedData)
       ? tSerde.deserializer(serializedData)
-      : undefined;
-  }
-  return {
-    serializer,
-    deserializer,
-  };
-}
+      : undefined,
+});
 
-export function serdeRecordFieldsBuilder(
+export const serdeRecordFieldsBuilder = (
   fieldNamesSerdes: Record<string, Serde<any>>
-): FieldsRecordSerde<any> {
+): FieldsRecordSerde<any> => {
   const recordSerde = { serializer: {}, deserializer: {} };
   Object.entries(fieldNamesSerdes).forEach(([fieldName, fieldSerde]) => {
     recordSerde.serializer[fieldName] = fieldSerde.serializer;
     recordSerde.deserializer[fieldName] = fieldSerde.deserializer;
   });
   return recordSerde;
-}
+};
 
-export function serialize<T>(serializer: Serializer<T>, data: T): Uint8Array {
+export const serialize = <T>(
+  serializer: Serializer<T>,
+  data: T
+): Uint8Array => {
   const serializedData = new BitArray();
   serializer(serializedData, data);
   return serializedData.consume();
-}
+};
 
-export function deserialize<T>(
+export const deserialize = <T>(
   deserializer: Deserializer<T>,
   serializedDataUint8: Uint8Array
-): T {
+): T => {
   const serializedData = new BitArray(serializedDataUint8);
   return deserializer(serializedData);
-}
+};
