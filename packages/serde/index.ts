@@ -70,12 +70,12 @@ export function serdeString(): Serde<string> {
   };
 }
 
-type Serializer<T> = (seriailzedData: BitArray, data: T) => void;
+export type Serializer<T> = (seriailzedData: BitArray, data: T) => void;
 // return field name, and its appropriate Serializer
 type RecordSerializer<T> = Record<string, Serializer<T>>;
 
 // returns the deserializedData
-type Deserializer<T> = (serializedData: BitArray) => T;
+export type Deserializer<T> = (serializedData: BitArray) => T;
 // return field name, and its appropriate Deserializer
 type RecordDeserializer<T> = Record<string, Deserializer<T>>;
 
@@ -83,7 +83,7 @@ interface FieldsRecordSerde<T> {
   serializer: RecordSerializer<T>;
   deserializer: RecordDeserializer<T>;
 }
-interface Serde<T> {
+export interface Serde<T> {
   serializer: Serializer<T>;
   deserializer: Deserializer<T>;
 }
