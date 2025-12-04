@@ -1,0 +1,11 @@
+{
+  "name": "@repo/serde",
+  "version": "0.0.0",
+  "author": "Yotam Cohen & Yoni Kiriaty",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {}
+}
